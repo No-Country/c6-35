@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Table(name = "personal")
 @SQLDelete(sql = "update personal SET deleted = 1 where ID=?")
 @Where(clause = "deleted <> 1")
-@Data
+@Data   //ges set
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
