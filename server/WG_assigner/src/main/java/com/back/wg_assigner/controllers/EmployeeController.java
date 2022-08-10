@@ -30,9 +30,9 @@ public class EmployeeController implements BaseCRUDController<Employee> {
         return ResponseEntity.ok(this.service.getById(id));
     }
 
-    @PostMapping("/{id}")
+    @PostMapping()
     @Override
-    public ResponseEntity<Employee> save(Employee model) throws Exception {
+    public ResponseEntity<Employee> save(@RequestBody Employee model) throws Exception {
         return ResponseEntity.ok(this.service.save(model));
     }
 
