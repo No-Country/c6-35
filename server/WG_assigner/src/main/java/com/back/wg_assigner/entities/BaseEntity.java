@@ -32,6 +32,6 @@ public class BaseEntity {
 
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     protected void onDeleted(){
-        this.deleted = false;
+        this.deleted = true;
     }
 }
