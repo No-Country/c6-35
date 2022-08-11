@@ -2626,11 +2626,6 @@ html {
   background-color: hsl(var(--b2, var(--b1)) / var(--tw-bg-opacity));
 }
 
-.bg-gray-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(107 114 128 / var(--tw-bg-opacity));
-}
-
 .py-6 {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
