@@ -27,4 +27,7 @@ public class Employee extends BaseEntity{
     private String direccion;
     @Column(name = "legajo")
     private Integer employeeId;
+    @Column(name = "")
+    @OneToOne
+    private User user;
 }

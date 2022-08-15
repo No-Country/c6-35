@@ -6,9 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "Users")
@@ -25,6 +23,7 @@ public class User  extends BaseEntity{
     private String email;
     @Column(name = "password")
     private String password;
-    @Column(name = "rol")
+    @Column(name = "rol")7
+    @ManyToOne
     private Rol rol;
 }
