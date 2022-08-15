@@ -23,7 +23,7 @@ public class User  extends BaseEntity{
     private String email;
     @Column(name = "password")
     private String password;
-    @Column(name = "rol")7
+    @Column(name = "rol")
     @ManyToOne
     private Rol rol;
 }
