@@ -27,6 +27,6 @@ public class Rol  extends BaseEntity {
     private String denomination;
     @Column(name = "description")
     private String  description;
-    @OneToMany
+    @OneToMany(mappedBy = "rol")
     private List<User> users;
 }

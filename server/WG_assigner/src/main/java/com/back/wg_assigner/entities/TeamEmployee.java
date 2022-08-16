@@ -1,7 +1,6 @@
 package com.back.wg_assigner.entities;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +18,12 @@ public class TeamEmployee extends Employee{
     private WorkTeam workTeam;
 
     public TeamEmployee(Employee employee){
-        super(employee.getName(), employee.getLastname(), employee.getDni(), employee.getPhone(), employee.getDireccion(), employee.getEmployeeId());
         setId(employee.getId());
+        setName(employee.getName());
+        setLastname(employee.getLastname());
+        setDni(employee.getDni());
+        setPhone(employee.getPhone());
+        setDireccion(employee.getDireccion());
+        setEmployeeId(employee.getEmployeeId());
     }
 }

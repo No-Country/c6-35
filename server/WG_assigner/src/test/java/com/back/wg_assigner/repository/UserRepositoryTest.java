@@ -1,18 +1,20 @@
 package com.back.wg_assigner.repository;
 
-import com.back.wg_assigner.entities.Employee;
 import com.back.wg_assigner.entities.Rol;
 import com.back.wg_assigner.entities.User;
 import com.back.wg_assigner.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
+@DataJpaTest
+@AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 public class UserRepositoryTest {
 
     @Autowired
@@ -31,7 +33,8 @@ public class UserRepositoryTest {
         assertThat(user.getUserName()).isEqualTo("Andres");
         assertThat(user.getEmail()).isEqualTo("andres@gmail.com");
         assertThat(user.getPassword()).isEqualTo("qwerty");
-        assertThat(user.getRol()).isEqualTo("Empleado").isEqualTo("tecnico en refrigeracion de materiales");
+        assertThat(user.getRol().getDenomination()).isEqualTo("Empleado");
+        assertThat(user.getRol().getDescription()).isEqualTo("tecnico en refrigeracion de materiales");
         entityManager.remove(newUser);
 
     }
@@ -47,13 +50,14 @@ public class UserRepositoryTest {
         assertThat(user.getUserName()).isEqualTo("Andres");
         assertThat(user.getEmail()).isEqualTo("andres@gmail.com");
         assertThat(user.getPassword()).isEqualTo("qwerty");
-        assertThat(user.getRol()).isEqualTo("Empleado").isEqualTo("tecnico en refrigeracion de materiales");
+        assertThat(user.getRol().getDenomination()).isEqualTo("Empleado");
+        assertThat(user.getRol().getDescription()).isEqualTo("tecnico en refrigeracion de materiales");
         entityManager.remove(newUser);
     }
 
     @Test
     void removeUser(){
-        User newUser = entityManager.persist(User.builder()
+        User newUserTest = entityManager.persist(User.builder()
                 .userName("Andres")
                 .email("andres@gmail.com")
                 .password("qwerty")
@@ -67,22 +71,26 @@ public class UserRepositoryTest {
     }
     @Test
     void listUser(){
+        Rol newRolTest = Rol.builder()
+                .denomination("Empleado")
+                .description("tecnico en refrigeracion de materiales")
+                .build();
         List<User> newUser =new ArrayList<>();
         newUser.add(User.builder()
                 .userName("Andres")
                 .email("andres@gmail.com")
                 .password("qwerty")
-                .rol( Rol.builder().denomination("Empleado").description("tecnico en refrigeracion de materiales").build()).build());
+                .rol(newRolTest ).build());
         newUser.add(User.builder()
                 .userName("Andres")
                 .email("andres@gmail.com")
                 .password("qwerty")
-                .rol( Rol.builder().denomination("Empleado").description("tecnico en refrigeracion de materiales").build()).build());
+                .rol( newRolTest).build());
         newUser.add(User.builder()
                 .userName("Andres")
                 .email("andres@gmail.com")
                 .password("qwerty")
-                .rol( Rol.builder().denomination("Empleado").description("tecnico en refrigeracion de materiales").build()).build());
+                .rol( newRolTest).build());
         newUser.get(1).setDeleted(true);
         newUser.stream().forEach(e ->entityManager.persist(e));
 

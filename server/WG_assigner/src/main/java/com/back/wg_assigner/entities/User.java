@@ -1,14 +1,13 @@
 package com.back.wg_assigner.entities;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "Users")
@@ -25,7 +24,7 @@ public class User  extends BaseEntity{
     private String email;
     @Column(name = "password")
     private String password;
-    @Column(name = "rol")
     @ManyToOne
+    @JoinColumn(name = "rol_id")
     private Rol rol;
 }
