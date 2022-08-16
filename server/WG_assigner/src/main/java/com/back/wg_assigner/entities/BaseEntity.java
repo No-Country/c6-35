@@ -8,11 +8,12 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @MappedSuperclass
 @Data
-public class BaseEntity {
+public class BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,6 +33,6 @@ public class BaseEntity {
 
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     protected void onDeleted(){
-        this.deleted = false;
+        this.deleted = true;
     }
 }

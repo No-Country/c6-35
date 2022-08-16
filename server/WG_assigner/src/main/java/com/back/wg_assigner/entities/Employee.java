@@ -8,6 +8,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "personal")
+@Inheritance(strategy=InheritanceType.JOINED)
 @SQLDelete(sql = "update personal SET deleted = 1 where ID=?")
 @Where(clause = "deleted <> 1")
 @Data   //ges set
