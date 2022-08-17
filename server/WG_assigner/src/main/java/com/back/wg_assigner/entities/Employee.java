@@ -29,5 +29,6 @@ public class Employee extends BaseEntity{
     @Column(name = "legajo")
     private Integer employeeId;
     @OneToOne
+    @JoinColumn(name = "user_id")
     private User user;
 }

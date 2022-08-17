@@ -16,7 +16,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "Rol")
-@SQLDelete(sql = "update Users SET deleted = 1 where ID=?")
+@SQLDelete(sql = "update rol SET deleted = 1 where ID=?")
 @Where(clause = "deleted <> 1")
 @Data   //ges set
 @Builder
