@@ -1,10 +1,9 @@
 package com.back.wg_assigner.repositories;
 
-import com.back.wg_assigner.entities.Employee;
+import com.back.wg_assigner.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 }
-

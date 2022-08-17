@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Inheritance(strategy=InheritanceType.JOINED)
 @SQLDelete(sql = "update personal SET deleted = 1 where ID=?")
 @Where(clause = "deleted <> 1")
-@Data
+@Data   //ges set
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,4 +28,7 @@ public class Employee extends BaseEntity{
     private String direccion;
     @Column(name = "legajo")
     private Integer employeeId;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
