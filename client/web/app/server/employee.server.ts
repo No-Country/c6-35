@@ -30,6 +30,6 @@ export async function getEmployeeWhitId(employeeId:any): Promise<EmployeeModel>{
     return await (await fetch( process.env.SERVER_URL + "/employee/"+ employeeId)).json();
 }
 
-export async function removeEmployeeWhitId(employeeId:any): Promise<EmployeeModel>{
-    return await (await fetch( process.env.SERVER_URL + "/employee/"+ employeeId, {method:"DELETED"})).json();
+export async function removeEmployeeWhitId(employeeId:any){
+    await (await fetch( process.env.SERVER_URL + "/employee/"+ employeeId, {method:"DELETED"})).json();
 }
