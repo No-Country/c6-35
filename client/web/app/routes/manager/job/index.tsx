@@ -29,7 +29,7 @@ export function CatchBoundary() {
     );
 }
 
-export default function EmployeeAdmin() {
+export default function JobAdmin() {
     const {data} = useLoaderData() as {data:EmployeeModel[]};
     const [employees, setEmployees] = useState(data);
     let navigate = useNavigate();
@@ -37,41 +37,28 @@ export default function EmployeeAdmin() {
         navigate("./"+id+"/edit");
     }
 
-    const removeEmployee = (id:string) =>{
-        
-        navigate("./");
-    }
-
     return (<>
         <div className="px-2 pt-4 md:px-4">
             <div className="text-2xl">
-                <h1>Administrador de empleados</h1>
+                <h1>Administrador de Ordenes de trabajo</h1>
             </div>
             <ManagerBar onAddClick={"./add"} onDelateClick={()=>{}} onEditColumnsClick={()=>{}} onMassiveClick={()=>{}}></ManagerBar>
             <div className="relative">
                 <Table row={10}
                     colums={[
-                    {key:"employeeId", name:"legajo"},
+                    {key:"code", name:"legajo"},
                     {key:"name", name:"nombre"},
                     {key:"lastname", name:"apellido"},
-                    {key:"userName", name:"nombre usuario"},
-                    {key:"rolName", name:"rol"},
                     {key:"dni", name:"DNI"},
                     {key:"phone", name:"celular"},
-                    {key:"email", name:"correo electronico"},
                     {key:"direccion", name:"dirección"}]} 
                     bts={[{
                         btn:(<><svg width="16" className="fill-current" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                             <path d="M0 12.6671V16H3.33287L13.1626 6.17025L9.82975 2.83738L0 12.6671ZM15.74 3.59283C16.0867 3.24622 16.0867 2.68629 15.74 2.33968L13.6603 0.259964C13.3137 -0.0866546 12.7538 -0.0866546 12.4072 0.259964L10.7807 1.8864L14.1136 5.21927L15.74 3.59283V3.59283Z" fill="inherit"/>
                             </svg></>),
                         action:editEmployee, 
-                        key:"id"},{
-                        btn:(<><svg width="16" className="fill-current" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M0 12.6671V16H3.33287L13.1626 6.17025L9.82975 2.83738L0 12.6671ZM15.74 3.59283C16.0867 3.24622 16.0867 2.68629 15.74 2.33968L13.6603 0.259964C13.3137 -0.0866546 12.7538 -0.0866546 12.4072 0.259964L10.7807 1.8864L14.1136 5.21927L15.74 3.59283V3.59283Z" fill="inherit"/>
-                            </svg></>),
-                        action:removeEmployee, 
                         key:"id"}]}
-                    data={employees.map((e)=>{return {...e, email:e.user.email, userName:e.user.userName, rolName:e.user.rol.id}})}
+                    data={employees}
                     
                     ></Table>
             </div>
