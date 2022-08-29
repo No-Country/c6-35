@@ -4,9 +4,13 @@ package com.back.wg_assigner.services.implementation;
 import com.back.wg_assigner.entities.User;
 import com.back.wg_assigner.repositories.UserRepository;
 import com.back.wg_assigner.services.interfaces.BaseCrudInterface;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class UserService implements BaseCrudInterface<User> {
@@ -17,8 +21,17 @@ public class UserService implements BaseCrudInterface<User> {
     }
     @Override
     public List<User> getAll() throws Exception {
-        return repository.findAll();
+        return StreamSupport.stream(repository.findAll().spliterator(), false).collect(Collectors.toList());
     }
+
+    public List<User> listByPage(int page, int size ) throws Exception {
+        Pageable pageable = PageRequest.of(page, size);
+        return StreamSupport.stream(repository.findAll(pageable).spliterator(), false).collect(Collectors.toList());
+    }
+
+
+
+
 
     @Override
     public User getById(Long id) throws Exception {

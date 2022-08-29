@@ -14,6 +14,8 @@ public class UserController implements BaseCRUDController<User>{
 
     private UserService service;
 
+    private final int PAGE_SIZE = 10;
+
     public UserController(UserService service){this.service = service;}
 
     @GetMapping

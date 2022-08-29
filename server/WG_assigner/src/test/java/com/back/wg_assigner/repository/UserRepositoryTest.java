@@ -12,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
@@ -102,7 +104,7 @@ public class UserRepositoryTest {
         newUser.get(1).setDeleted(true);
         newUser.stream().forEach(e ->entityManager.persist(e));
 
-        List<User> user = repository.findAll();
+        List<User> user = StreamSupport.stream(repository.findAll().spliterator(), false).collect(Collectors.toList());
 
         assertThat(user.stream().count()).isEqualTo(2);
     }
