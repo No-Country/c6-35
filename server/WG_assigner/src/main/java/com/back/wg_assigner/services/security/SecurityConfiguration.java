@@ -1,3 +1,4 @@
+/*
 package com.back.wg_assigner.services.security;
 
 import org.springframework.context.annotation.Bean;
@@ -21,3 +22,4 @@ public class SecurityConfiguration {
         return http.build();
     }
 }
+*/
