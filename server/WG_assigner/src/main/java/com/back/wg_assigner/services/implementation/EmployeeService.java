@@ -1,11 +1,16 @@
 package com.back.wg_assigner.services.implementation;
 
 import com.back.wg_assigner.entities.Employee;
+import com.back.wg_assigner.entities.Rol;
 import com.back.wg_assigner.repositories.EmployeeRepository;
+import com.back.wg_assigner.repositories.RolRepository;
 import com.back.wg_assigner.repositories.UserRepository;
 import com.back.wg_assigner.services.interfaces.BaseCrudInterface;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.net.HttpURLConnection;
 import java.util.List;
 
 @Service
@@ -13,6 +18,8 @@ public class EmployeeService implements BaseCrudInterface<Employee> {
 
     private EmployeeRepository repository;
     private UserRepository userRepository;
+
+    private RolRepository rolRepository;
 
     public EmployeeService(EmployeeRepository repository, UserRepository userRepository){
         this.repository = repository;
@@ -26,7 +33,11 @@ public class EmployeeService implements BaseCrudInterface<Employee> {
 
     @Override
     public Employee getById(Long id) throws Exception {
-        return repository.findById(id).orElseThrow();
+        Employee employee;
+        employee = repository.findById(id).orElseThrow(()->
+            new ResponseStatusException(HttpStatus.NOT_FOUND,"Empleado no encontrado")
+        );
+        return employee;
     }
 
     @Override
@@ -36,9 +47,15 @@ public class EmployeeService implements BaseCrudInterface<Employee> {
         entity.setUpdated(null);
         entity.setCreated(null);
         if(entity.getUser() == null)
-            throw new RuntimeException();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"dato de usuario faltantes");
         if(userRepository.findUserByUserNameOrEmail(entity.getUser().getUserName(), entity.getUser().getEmail()).stream().count() > 0)
-            throw new RuntimeException();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"usuario existente");
+        if(entity.getUser().getRol() == null && entity.getUser().getRol().getId() != null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"rol no asignado");
+        Rol rol = rolRepository.findById(entity.getUser().getRol().getId()).orElseThrow(()->
+            new ResponseStatusException(HttpStatus.BAD_REQUEST,"No se encuentra el rol asignado")
+        );
+        entity.getUser().setRol(rol);
         entity.setUser(userRepository.save(entity.getUser()));
         return repository.save(entity);
     }
@@ -50,6 +67,10 @@ public class EmployeeService implements BaseCrudInterface<Employee> {
         entity.setDeleted(employee.isDeleted());
         entity.setUpdated(employee.getUpdated());
         entity.setCreated(employee.getCreated());
+        entity.getUser().setPassword(employee.getUser().getPassword());
+        Rol rol = rolRepository.findById(entity.getUser().getRol().getId()).orElseThrow();
+        entity.getUser().setRol(rol);
+        entity.setUser(userRepository.save(entity.getUser()));
         return repository.save(entity);
     }
 

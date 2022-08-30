@@ -23,7 +23,7 @@ public class Employee extends BaseEntity{
     @Column(name = "dni")
     private Integer dni;
     @Column(name = "celular")
-    private Integer phone;
+    private Long phone;
     @Column(name = "direccion")
     private String direccion;
     @Column(name = "legajo")
