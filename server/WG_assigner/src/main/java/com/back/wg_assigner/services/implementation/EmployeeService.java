@@ -21,9 +21,10 @@ public class EmployeeService implements BaseCrudInterface<Employee> {
 
     private RolRepository rolRepository;
 
-    public EmployeeService(EmployeeRepository repository, UserRepository userRepository){
+    public EmployeeService(EmployeeRepository repository, UserRepository userRepository, RolRepository rolRepository){
         this.repository = repository;
         this.userRepository = userRepository;
+        this.rolRepository = rolRepository;
     }
 
     @Override
