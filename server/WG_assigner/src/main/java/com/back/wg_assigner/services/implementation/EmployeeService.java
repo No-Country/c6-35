@@ -53,7 +53,6 @@ public class EmployeeService implements BaseCrudInterface<Employee> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"usuario existente");
         if(entity.getUser().getRol() == null && entity.getUser().getRol().getId() != null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"rol no asignado");
-        System.out.println(entity.getUser().getRol().getId());
         Rol rol = rolRepository.findById(entity.getUser().getRol().getId()).orElseThrow(()->
             new ResponseStatusException(HttpStatus.BAD_REQUEST,"No se encuentra el rol asignado")
         );
