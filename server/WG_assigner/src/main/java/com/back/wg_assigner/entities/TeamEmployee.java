@@ -25,5 +25,6 @@ public class TeamEmployee extends Employee{
         setPhone(employee.getPhone());
         setDireccion(employee.getDireccion());
         setEmployeeId(employee.getEmployeeId());
+        setUser(employee.getUser());
     }
 }
