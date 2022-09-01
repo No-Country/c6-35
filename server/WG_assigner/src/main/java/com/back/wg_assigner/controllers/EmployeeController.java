@@ -29,7 +29,7 @@ public class EmployeeController implements BaseCRUDController<EmployeeController
     @GetMapping
     @Override
     public ResponseEntity<List<EmployeeDto>> getAll() throws Exception {
-        return ResponseEntity.ok(this.service.getAll().stream().map(this::toEmployeeDto).collect(Collectors.toList()));
+        return ResponseEntity.ok(this.service.getAll().stream().map(EmployeeController::toEmployeeDto).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
@@ -58,7 +58,7 @@ public class EmployeeController implements BaseCRUDController<EmployeeController
     }
 
 
-    public EmployeeDto toEmployeeDto(Employee employee){
+    public static EmployeeDto toEmployeeDto(Employee employee){
         return EmployeeDto.builder()
                 .id(employee.getId())
                 .employeeId(employee.getEmployeeId())
@@ -72,12 +72,12 @@ public class EmployeeController implements BaseCRUDController<EmployeeController
                         .id(employee.getUser().getId())
                         .userName(employee.getUser().getUserName())
                         .email(employee.getUser().getEmail())
-                        .rol(RolDto.builder().id(employee.getUser().getRol().getId()).build())
+                        .rol(RolController.RolDto.builder().id(employee.getUser().getRol().getId()).build())
                         .build()
                 ).build();
     }
 
-    public Employee toEmployee(EmployeeDto employee){
+    public static Employee toEmployee(EmployeeDto employee){
         Employee employeeEntity = Employee.builder()
                 .employeeId(employee.getEmployeeId())
                 .name(employee.getName())
@@ -85,16 +85,23 @@ public class EmployeeController implements BaseCRUDController<EmployeeController
                 .dni(employee.getDni())
                 .phone(employee.getPhone())
                 .direccion(employee.getDireccion())
-                .user(
+                .user((employee.getUser() != null)?
                         User.builder()
                                 .userName(employee.getUser().getUserName())
                                 .email(employee.getUser().getEmail())
                                 .rol(Rol.builder().build())
                                 .password(employee.getUser().getPassword())
-                                .build()
+                                .build():User.builder().build()
                 ).build();
-        employeeEntity.getUser().setId(employee.getUser().getId());
-        employeeEntity.getUser().getRol().setId(employee.getUser().getRol().getId());
+        employeeEntity.setId(employee.getId());
+        if(employee.getUser() != null){
+            employeeEntity.getUser().setId(employee.getUser().getId());
+            if(employee.getUser().getRol() != null){
+                employeeEntity.getUser().getRol().setId(employee.getUser().getRol().getId());
+                employeeEntity.getUser().getRol().setDenomination(employee.getUser().getRol().getDenomination());
+                employeeEntity.getUser().getRol().setDescription(employee.getUser().getRol().getDescription());
+            }
+        }
         return employeeEntity;
     }
 
@@ -105,7 +112,7 @@ public class EmployeeController implements BaseCRUDController<EmployeeController
         private String userName;
         private String email;
         private String password;
-        private RolDto rol;
+        private RolController.RolDto rol;
     }
 
     @Data
@@ -120,11 +127,5 @@ public class EmployeeController implements BaseCRUDController<EmployeeController
         private Integer employeeId;
         private UserDto user;
     }
-    @Data
-    @Builder
-    public static class RolDto implements Serializable{
-        private Long id;
-        private String denomination;
-        private String  description;
-    }
+
 }

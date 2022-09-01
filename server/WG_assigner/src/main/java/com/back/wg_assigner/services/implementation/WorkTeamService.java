@@ -1,21 +1,30 @@
 package com.back.wg_assigner.services.implementation;
 
 import com.back.wg_assigner.entities.BaseEntity;
+import com.back.wg_assigner.entities.TeamEmployee;
 import com.back.wg_assigner.entities.WorkTeam;
+import com.back.wg_assigner.repositories.EmployeeRepository;
+import com.back.wg_assigner.repositories.TeamEmployeeRepository;
 import com.back.wg_assigner.repositories.WorkTeamRepository;
 import com.back.wg_assigner.services.interfaces.BaseCrudInterface;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class WorkTeamService implements BaseCrudInterface<WorkTeam> {
 
     private WorkTeamRepository repository;
+    private EmployeeRepository repositoryEmployee;
+    private TeamEmployeeRepository teamEmployeeRepository;
 
-    public WorkTeamService(WorkTeamRepository workTeamRepository){
+    public WorkTeamService(WorkTeamRepository workTeamRepository, EmployeeRepository repositoryEmployee, TeamEmployeeRepository teamEmployeeRepository){
         this.repository = workTeamRepository;
+        this.repositoryEmployee = repositoryEmployee;
+        this.teamEmployeeRepository = teamEmployeeRepository;
     }
 
     @Override
@@ -34,7 +43,11 @@ public class WorkTeamService implements BaseCrudInterface<WorkTeam> {
         entity.setDeleted(false);
         entity.setUpdated(null);
         entity.setCreated(null);
-        return repository.save(entity);
+        List<TeamEmployee> teamEmployees = entity.getEmpleados().stream().map((e)->new TeamEmployee(repositoryEmployee.findById(e.getId()).get())).collect(Collectors.toList());
+        entity.setEmpleados(teamEmployees);
+        WorkTeam team = repository.save(entity);
+        teamEmployeeRepository.saveAll(teamEmployees.stream().map((e)->{e.setWorkTeam(team); return e;}).collect(Collectors.toList()));
+        return team;
     }
 
     @Override
@@ -44,7 +57,11 @@ public class WorkTeamService implements BaseCrudInterface<WorkTeam> {
         entity.setDeleted(workTeam.isDeleted());
         entity.setUpdated(workTeam.getUpdated());
         entity.setCreated(workTeam.getCreated());
-        return repository.save(entity);
+        List<TeamEmployee> teamEmployees = entity.getEmpleados().stream().map((e)->new TeamEmployee(repositoryEmployee.findById(e.getId()).get())).collect(Collectors.toList());
+        entity.setEmpleados(teamEmployees);
+        WorkTeam team = repository.save(entity);
+        teamEmployeeRepository.saveAll(teamEmployees.stream().map((e)->{e.setWorkTeam(team); return e;}).collect(Collectors.toList()));
+        return team;
     }
 
     @Override

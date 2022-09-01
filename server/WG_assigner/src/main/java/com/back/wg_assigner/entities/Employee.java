@@ -30,5 +30,5 @@ public class Employee extends BaseEntity{
     private Integer employeeId;
     @OneToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user = new User();
 }
