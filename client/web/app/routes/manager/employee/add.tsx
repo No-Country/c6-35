@@ -1,11 +1,7 @@
 import { ActionFunction, json, redirect } from "@remix-run/node";
 import { Form, useActionData, useOutletContext, useParams } from "@remix-run/react";
-import { useEffect, useState } from "react";
-import Button from "~/components/Button";
-import TitleDirectory from "~/components/TitleDirectory";
 import { createEmployee, EmployeeModel } from "~/server/employee.server";
 import { validateName, validateDNI, validateNroLegajo, validatePhone, validateEmail, validatePassword} from "~/utils/validate";
-import Employee from "../employee";
 
 
 interface Errors {
