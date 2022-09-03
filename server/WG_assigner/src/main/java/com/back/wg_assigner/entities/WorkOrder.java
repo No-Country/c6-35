@@ -20,7 +20,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class WorkOrder extends BaseEntity{
     @Column(name = "observacion")
-    private String Observacion;
+    private String observacion;
     @OneToOne
     @Column(name = "direccion")
     private Address address;
