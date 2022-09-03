@@ -1,6 +1,5 @@
 package com.back.wg_assigner.controllers;
 
-import com.back.wg_assigner.entities.BaseEntity;
 import com.back.wg_assigner.entities.Employee;
 import com.back.wg_assigner.entities.Rol;
 import com.back.wg_assigner.entities.User;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,11 +66,11 @@ public class EmployeeController implements BaseCRUDController<EmployeeController
                 .phone(employee.getPhone())
                 .direccion(employee.getDireccion())
                 .user(
-                        UserDto.builder()
+                        UserController.UserDto.builder()
                         .id(employee.getUser().getId())
                         .userName(employee.getUser().getUserName())
                         .email(employee.getUser().getEmail())
-                        .rol(RolController.RolDto.builder().id(employee.getUser().getRol().getId()).build())
+                        .rol(UserController.RolDto.builder().id(employee.getUser().getRol().getId()).build())
                         .build()
                 ).build();
     }
@@ -105,15 +103,7 @@ public class EmployeeController implements BaseCRUDController<EmployeeController
         return employeeEntity;
     }
 
-    @Data
-    @Builder
-    public static class UserDto implements Serializable {
-        private Long id;
-        private String userName;
-        private String email;
-        private String password;
-        private RolController.RolDto rol;
-    }
+
 
     @Data
     @Builder
@@ -125,7 +115,7 @@ public class EmployeeController implements BaseCRUDController<EmployeeController
         private Long phone;
         private String direccion;
         private Integer employeeId;
-        private UserDto user;
+        private UserController.UserDto user;
     }
 
 }

@@ -3,10 +3,13 @@ package com.back.wg_assigner.controllers;
 
 import com.back.wg_assigner.entities.User;
 import com.back.wg_assigner.services.implementation.UserService;
+import lombok.Builder;
+import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.Serializable;
 import java.util.List;
 @Repository
 @RequestMapping("/user")
@@ -18,11 +21,16 @@ public class UserController implements BaseCRUDController<User>{
 
     public UserController(UserService service){this.service = service;}
 
-    @GetMapping
+
     @Override
     public ResponseEntity<List<User>> getAll() throws Exception {
         return ResponseEntity.ok(this.service.getAll());
     }
+    @GetMapping(params = {"page"})
+    public ResponseEntity<List<User>> lisAllByPage(@RequestParam(name = "page") Integer page) throws Exception {
+        return ResponseEntity.ok(this.service.listByPage(page, PAGE_SIZE ));
+    }
+
 
     @GetMapping("/{id}")
     @Override
@@ -44,5 +52,24 @@ public class UserController implements BaseCRUDController<User>{
     public ResponseEntity<?> delete(@PathVariable("id") Long id) throws Exception {
         this.service.remove(id);
         return ResponseEntity.ok("");
+    }
+
+
+    @Data
+    @Builder
+    public static class UserDto implements Serializable {
+        private Long id;
+        private String userName;
+        private String email;
+        private String password;
+        private RolDto rol;
+    }
+
+    @Data
+    @Builder
+    public static class RolDto implements Serializable{
+        private Long id;
+        private String denomination;
+        private String  description;
     }
 }
