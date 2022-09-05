@@ -1,12 +1,10 @@
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
-import { Form, useActionData, useCatch, useLoaderData, useOutletContext, useParams } from "@remix-run/react";
-import { useEffect, useState } from "react";
-import Button from "~/components/Button";
+import { Form, useActionData, useCatch, useLoaderData, useSubmit } from "@remix-run/react";
+import { useRef, useState } from "react";
+import Input from "~/components/Input";
 import ScreenCatch from "~/components/ScreenCatch";
-import TitleDirectory from "~/components/TitleDirectory";
-import { createEmployee, EmployeeModel, getEmployeeWhitId } from "~/server/employee.server";
+import { EmployeeModel, getEmployeeWhitId, updateEmployee } from "~/server/employee.server";
 import { validateName, validateDNI, validateNroLegajo, validatePhone, validateEmail, validatePassword} from "~/utils/validate";
-import Employee from "../employee";
 
 
 interface Errors {
@@ -29,7 +27,7 @@ export const loader: LoaderFunction =async ({params}) => {
     const {employeeId} = params;
     let employee: EmployeeModel;
     if(employeeId === "-11"){
-        employee = {id: 0, dni:"123333", name:"Diego", lastname:"Noblega", phone:2333223, employeeId:2333,direccion:"", user:{email:"diego2212@gmail.com", userName:"diegoNoble", rol:{id:2}, password:"dwdwd"}}
+        employee = {id: 0, dni:12333322, name:"Diego", lastname:"Noblega", phone:2333223, employeeId:2333,direccion:"", user:{email:"diego2212@gmail.com", userName:"diegoNoble", rol:{id:2}, password:"dwdwd"}}
         return json(employee)
     }
     try {
@@ -45,18 +43,18 @@ export const loader: LoaderFunction =async ({params}) => {
 
 export const action: ActionFunction =async ({params, request}) => {
     const form = await request.formData()
-
+    const id = form.get("id")?.toString();
     const name = form.get("name")?.toString();
     const lastname = form.get("lastname")?.toString();
     const dni = form.get("dni")?.toString();
     const nrolegajo = form.get("nrolegajo")?.toString(); 
     const celular = form.get("celular")?.toString();
     const direccion = form.get("direccion")?.toString();
+    const userId = form.get("userId")?.toString();
     const user = form.get("user")?.toString();
     const email = form.get("email")?.toString();
     const password = form.get("password")?.toString();
     const rol = form.get("rol")?.toString();
-    console.log(name)
     let errors:Errors = {};
     let actionData: ActionData = {errors};
     let isErrors = false;
@@ -71,7 +69,6 @@ export const action: ActionFunction =async ({params, request}) => {
     validate(validatePhone.bind(null, celular!),{celular:"numero de celular invalido"});
     validate(validateName.bind(null, user!),{user:"usuario no valido"});
     validate(validateEmail.bind(null, email!),{email:"correo electronico invalido"});
-    validate(validatePassword.bind(null, password!),{password:"contraseña demasiado debil"});
     actionData.errors = errors;
     if(isErrors)
         return json<ActionData>(
@@ -79,38 +76,27 @@ export const action: ActionFunction =async ({params, request}) => {
             {status:400}
         )
     
-    const newEmployee: EmployeeModel  = await createEmployee({
+    const newEmployee: EmployeeModel  = await updateEmployee({
+        id:Number.parseInt(id!),
         name: name!,
         lastname:lastname!,
-        dni:dni!,
+        dni:Number.parseInt(dni!),
         employeeId:parseInt(nrolegajo!),
         phone:parseInt(celular!),
-        direccion:"",
+        direccion:direccion!,
         user:{
+            id:Number.parseInt(userId!),
             userName: user!,
             email:email!,
             password:password!,
             rol:{id:parseInt(rol!)}
         }
-    })
+    },  Number.parseInt(id!))
     return redirect(`/employee/${newEmployee.id!}`);
 }
 
 
-function Input({title, value, type, name, errMsj, onChange}:{title:string, value:any, type: string, name: string, errMsj: String | undefined | null, onChange?:Function}) {
 
-    return (<div className="flex flex-col mt-2">
-        <label className="text-[0.8rem]">{title}</label>
-        <input type={type} value={value} className="border-app-w-write-gris border-solid border-2 px-2 py-1 rounded" name={name} aria-invalid={errMsj? true:undefined} aria-details={name+"-error"} 
-            onChange={event=>{
-                if(onChange)
-                    onChange(event.target.value)
-            }} ></input>
-        {(errMsj)?
-            <span id={name+"-error"} className="text-[0.7rem] text-[#EF233C]">{errMsj}</span>:
-            <></>}
-    </div>)
-}
 
 export function CatchBoundary() {
     const caught = useCatch();
@@ -124,7 +110,16 @@ export default function EditEmployee() {
     const {data:employee} = useLoaderData() as {data:EmployeeModel};
     const [data, setData] = useState(employee);
     const actionData = useActionData() as ActionData;
-    console.log(data)
+    const formRef = useRef<HTMLFormElement>(null);
+    const submit = useSubmit();
+    function handleSubmit(event:any) {
+        let formData = new FormData(formRef.current!)
+        formData.set("id", data.id!.toString());
+        formData.set("userId", data.user.id!.toString());
+        submit(formData, {method:"post", action:event.target.action});
+        event.preventDefault();
+    }
+
     const handle = (callBack:(data:EmployeeModel, value:any)=>void)=>{
         return (value:any)=>{
             let d = {...data};
@@ -141,7 +136,7 @@ export default function EditEmployee() {
             </div>
             <div className="mx-2"></div>
             <div className="mt-6 xl:w-1/2 ml-auto mr-auto space-y-4">
-                <Form method="post">
+                <Form method="post" ref={formRef} onSubmit={handleSubmit}>
                     <div className="flex flex-col p-4 border-solid border border-app-w-write-ash bg-app-w-write rounded-md">
                         <div>
                             <span className="pl-2">Datos Basicos</span>
@@ -170,8 +165,7 @@ export default function EditEmployee() {
                                 <Input title="Nombre de usuario" type="text" value={data.user.userName} name="user" errMsj={actionData?.errors?.user} onChange={handle((data,value)=>{data.user.userName = value})}></Input>
                                 <Input title="Correo electronico" type="text" value={data.user.email} name="email" errMsj={actionData?.errors?.email} onChange={handle((data,value)=>{data.user.email = value})}></Input>
                             </div>
-                            <div className="w-44"><Input title="Contraseña" type="text" value={""} name="password" errMsj={actionData?.errors?.password} onChange={handle((data,value)=>{data.user.password = value})}></Input></div>
-                            <Input title="Rol" type="text" value="" name="rol" errMsj={""} onChange={handle((data,value)=>{data.user.rol.id = value})}></Input>
+                            <Input title="Rol" type="text" value={data.user.rol.id} name="rol" errMsj={""} onChange={handle((data,value)=>{data.user.rol.id = value})}></Input>
                         </div>
                     </div>
                     <div className="float-right mt-2"><button>Confirm</button></div>

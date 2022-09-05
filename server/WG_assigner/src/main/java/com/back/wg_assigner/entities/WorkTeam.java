@@ -22,7 +22,6 @@ import java.util.List;
 public class WorkTeam extends BaseEntity{
     @Column(name = "codigo")
     private String code;
-    @Column(name = "DIreccion")
     @OneToMany(mappedBy = "workTeam")
     private List<TeamEmployee> empleados = new ArrayList<>();
 }

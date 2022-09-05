@@ -1,10 +1,11 @@
 import { ActionFunction, json, LoaderFunction, redirect } from "@remix-run/node";
 import { Form, useActionData, useLoaderData, useOutletContext, useParams, useSubmit } from "@remix-run/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button, { TypeButton } from "~/components/Button";
+import Input from "~/components/Input";
 import Table from "~/components/Table";
-import { EmployeeModel, listEmployee } from "~/server/employee.server";
-import { createWorkTeam } from "~/server/workteam.server";
+import { createEmployee, EmployeeModel, listEmployee, updateEmployee } from "~/server/employee.server";
+import { createWorkTeam, getWorkTeamWhitId, updateWorkTeam, WorkTeamModel } from "~/server/workteam.server";
 
 
 interface Errors {
@@ -16,49 +17,49 @@ interface ActionData {
   }
 
 export const loader: LoaderFunction =async ({params,request}) => {
+    const {workteamId} = params;
+    let workTeam: WorkTeamModel;
     let employees: EmployeeModel[];
     try {
+        workTeam = await getWorkTeamWhitId(workteamId);
         employees = await listEmployee();
     } catch (error) {
         throw new Response("Upps! No es posible conectarse al servicio por el momento", { status: 400 });
     }
-    return json({data:employees, type:"list"})
+    return json({data:{workTeam,employees}, type:"list"})
 }
 
 export const action: ActionFunction =async ({params, request}) => {
     const form = await request.formData();
+    let id = form.get("id")?.toString();
     const employees = JSON.parse(form.get("employees")?.toString()!) as number[]
-    console.log(await createWorkTeam({
+    console.log(await updateWorkTeam({
         employees: employees.map((n)=>({id:n})) as EmployeeModel[],
         code: form.get("code")?.toString()!,
         jobs: []
-    }))
+    },Number.parseInt(id!)))
     return json({})
 }
 
 
-function Input({title, value, type, name, errMsj}:{title:string, value:any, type: string, name: string, errMsj: String | undefined | null}) {
-
-    return (<div className="flex flex-col mt-2">
-        <label className="text-[0.8rem]">{title}</label>
-        <input type={type} className="border-app-w-write-gris border-solid border-2 px-2 py-1 rounded" name={name} aria-invalid={errMsj? true:undefined} aria-details={name+"-error"}></input>
-        {(errMsj)?
-            <span id={name+"-error"} className="text-[0.7rem] text-[#EF233C]">{errMsj}</span>:
-            <></>}
-    </div>)
-}
-
-
-export default function AddWorkTeam() {
+export default function EditWorkTeam() {
     const actionData = useActionData() as ActionData;
-    const {data, type} = useLoaderData() as {data:EmployeeModel[], type:string};
-    const [employees, setEmployees] = useState<EmployeeModel[]>(data);
-    const [employeesSelected, setEmployeesSelected] = useState<EmployeeModel[]>([]);
+    const {data, type} = useLoaderData() as {data:{employees:EmployeeModel[], workTeam:WorkTeamModel}, type:string};
+    const [employees, setEmployees] = useState<EmployeeModel[]>(data.employees);
+    const [employeesSelected, setEmployeesSelected] = useState<EmployeeModel[]>(data.workTeam.employees);
+    const [code, setCode] = useState<string>(data.workTeam.code);
     const formRef = useRef<HTMLFormElement>(null);
     const submit = useSubmit();
+
+    useEffect(()=>{
+        setEmployees(employees.filter((e)=>(employeesSelected.find((i)=>(e.id === i.id)))?false:true))
+    },[employeesSelected])
+
+
     function handleSubmit(event:any) {
         let formData = new FormData(formRef.current!)
         formData.set("employees",JSON.stringify(employeesSelected.map((e)=>e.id)));
+        formData.set("id",data.workTeam.id?.toString()!);
         submit(formData, {method:"post", action:event.target.action});
         event.preventDefault();
     }
@@ -93,7 +94,7 @@ export default function AddWorkTeam() {
                 <Form method="post" ref={formRef} onSubmit={handleSubmit}>
                     <div className="w-full flex flex-col p-4 border-solid border border-app-w-write-ash bg-app-w-write rounded-md">
                     <div className="space-y-4 flex flex-col">
-                        <Input name="code" value={""} title="Codigo de equipo" errMsj={""} type="number"></Input>
+                        <Input name="code" value={code} title="Codigo de equipo" errMsj={""} type="number" onChange={(v:any)=>{setCode(v)}}></Input>
                         <div>
                             <span>Integrantes</span>
                             <Table 
@@ -119,9 +120,7 @@ export default function AddWorkTeam() {
                         bts={[{
                             key:"id",
                             action:asignarEmployeeHandle,
-                            btn:<>
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.29998 11.9L2.56665 8.16665L3.28332 7.44998L6.29998 10.4667L12.7 4.06665L13.4166 4.78332L6.29998 11.9Z" fill="inherit"/></svg>
-                            </>}]}
+                            btn:<><svg className="fill-current" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M6.29998 11.9L2.56665 8.16665L3.28332 7.44998L6.29998 10.4667L12.7 4.06665L13.4166 4.78332L6.29998 11.9Z"/></svg></>}]}
                     ></Table>
                 </div>
             </div>

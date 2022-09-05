@@ -22,12 +22,11 @@ public class WorkOrder extends BaseEntity{
     @Column(name = "observacion")
     private String observacion;
     @OneToOne
-    @Column(name = "direccion")
+    @JoinColumn(name = "address_id")
     private Address address;
     @ManyToOne
-    @Column(name = "tipodetrabajo")
+    @JoinColumn(name = "typeofwork_id")
     private TypeOfWork typeOfWork;
     @OneToOne
-    @Column(name = "estado")
     private State state;
 }

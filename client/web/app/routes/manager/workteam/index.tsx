@@ -5,23 +5,17 @@ import { useEffect, useState } from "react";
 import ManagerBar from "~/components/ManagerBar";
 import ScreenCatch from "~/components/ScreenCatch";
 import Table, { column } from "~/components/Table";
-import { WorkTeamModel } from "~/server/workteam.server";
+import { listWorkTeam, WorkTeamModel } from "~/server/workteam.server";
 
 export const loader: LoaderFunction =async ({params,request}) => {
-    const url = new URL(request.url);
-    const created = url.searchParams.get("created");
     let workTeam: WorkTeamModel[];
     try {
-        workTeam = [{id:1,employees:[
-            {id:1,name:"Diego", lastname:"Noblega", dni:"21714276", phone:21433, direccion:"Lisandro Moyano", employeeId:122, user:{email:"example@gmail.com", password:"123hff", rol:{id:1}, userName:"diegoN"}},
-            {id:2,name:"Gaston", lastname:"Noblega", dni:"21714276", phone:21433, direccion:"Lisandro Moyano", employeeId:122, user:{email:"example@gmail.com", password:"123hff", rol:{id:2}, userName:"diegoN"}}
-        ],jobs:[]},
-    ];
+        workTeam = await listWorkTeam();
+        console.log(workTeam);
     } catch (error) {
-        console.log(error)
         throw new Response("Upps! No es posible conectarse al servicio por el momento", { status: 400 });
     }
-    return json({data:workTeam, created})
+    return json({data:workTeam})
 }
 
 export function CatchBoundary() {
@@ -38,10 +32,10 @@ export default function WorkTeamAdmin() {
     const [workTeam, setWorkTeam] = useState(data);
     const [activedDeletedOption, setActivedDeletedOption] = useState(false);
     const [columns, setColumns] = useState([
-        {key:"id", name:"codigo"},
-        {key:"encargado", name:"encargado", callBack:(obj:WorkTeamModel)=><><p>{obj.employees.filter((e)=>(e.user.rol.id === 2)).pop()?.name}</p></>},
+        {key:"code", name:"codigo"},
+        {key:"encargado", name:"encargado", callBack:(obj:WorkTeamModel)=><><p>{obj.employees.filter((e)=>(e.user.rol.id === 1)).pop()?.name}</p></>},
         {key:"cuadrillla", name:"cuadrilla", callBack:(obj:WorkTeamModel)=><><div className="flex -space-x-4">{obj.employees.map((e)=><><div className="hover:relative hover:z-10 h-8 w-8 bg-app-w-secodary rounded-full flex justify-center items-center border-2 border-app-w-write text-[0.6rem]"><span>{`${e.name.charAt(0)} ${e.lastname.charAt(0)}`}</span></div></>)}</div></>},
-        {key:"trabajoActual", name:"trabajo actual", callBack:(obj:WorkTeamModel)=><><p>{obj.jobs.pop()?.name}</p></>}].map(o=>({...o,on:true})));
+        ].map(o=>({...o,on:true})));
     let navigate = useNavigate();
     const editWorkTeam = (id:string) =>{
         navigate("./"+id+"/edit");

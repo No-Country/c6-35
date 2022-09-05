@@ -9,17 +9,13 @@ import Table from "~/components/Table";
 import { EmployeeModel, listEmployee } from "~/server/employee.server";
 
 export const loader: LoaderFunction =async ({params,request}) => {
-    console.log(process.env.SERVER_URL)
-    const url = new URL(request.url);
-    const created = url.searchParams.get("created");
     let employees: EmployeeModel[];
     try {
         employees = await listEmployee();
     } catch (error) {
-        console.log(error)
         throw new Response("Upps! No es posible conectarse al servicio por el momento", { status: 400 });
     }
-    return json({data:employees, created})
+    return json({data:employees})
 }
 
 export function CatchBoundary() {

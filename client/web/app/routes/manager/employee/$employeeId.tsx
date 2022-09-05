@@ -12,19 +12,16 @@ export const loader: LoaderFunction =async ({params,request}) => {
     const {employeeId} = params;
     let employee: EmployeeModel;
     if(employeeId === "-11"){
-        employee = {id: 0, dni:"123333", name:"Diego", lastname:"Noblega", phone:2333223, employeeId:2333, direccion:"", user:{email:"diego2212@gmail.com", userName:"diegoNoble", rol:{id:2}, password:"dwdwd"}}
+        employee = {id: 0, dni:123333, name:"Diego", lastname:"Noblega", phone:2333223, employeeId:2333, direccion:"", user:{email:"diego2212@gmail.com", userName:"diegoNoble", rol:{id:2}, password:"dwdwd"}}
         return json({data:employee, created})
     }
     try {
         let data:any = await getEmployeeWhitId(employeeId);
-        console.log(data)
-        console.log("hola")
         if(data.error)
             throw {error:data.error, status: data.status, message: data.message};
         employee = data;
         return json({data:employee, created})
     } catch (error) {
-        console.log(error)
         let e:any = error;
         throw new Response(e.error, { status: e.status });
     }
@@ -67,7 +64,7 @@ export default function EmployeeId() {
                         <DataLabel label={"Apellido"} text={employee.lastname}></DataLabel>
                         <DataLabel label={"Legajo"} text={employee.employeeId.toString()}></DataLabel>
                     </div>
-                    <DataLabel label={"DNI"} text={employee.dni} className="w-full"></DataLabel>
+                    <DataLabel label={"DNI"} text={employee.dni.toString()} className="w-full"></DataLabel>
                 </div>
                 <div className="bg-app-w-primary px-[1px] py-[1px] rounded-full"></div>
                 <div className="flex flex-col space-y-4">

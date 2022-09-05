@@ -56,23 +56,32 @@ export const action: ActionFunction =async ({params, request}) => {
             actionData,
             {status:400}
         )
-    
-    const newEmployee: EmployeeModel  = await createEmployee({
-        name: name!,
-        lastname:lastname!,
-        dni:dni!,
-        employeeId:parseInt(nrolegajo!),
-        phone:parseInt(celular!),
-        direccion:direccion!,
-        user:{
-            userName: user!,
-            email:email!,
-            password:password!,
-            rol:{id:parseInt(rol!)}
-        }
-    })
-    console.log(newEmployee)
-    return redirect(`/manager/employee/${newEmployee.id!}?created=y`);
+    try {
+        const data: any  = await createEmployee({
+            name: name!,
+            lastname:lastname!,
+            dni:Number.parseInt(dni!),
+            employeeId:parseInt(nrolegajo!),
+            phone:parseInt(celular!),
+            direccion:direccion!,
+            user:{
+                userName: user!,
+                email:email!,
+                password:password!,
+                rol:{id:parseInt(rol!)}
+            }
+        })
+        if(data.error)
+            throw {error:data.error, status: data.status, message: data.message};
+        let newEmployee: EmployeeModel = data;
+        return redirect(`/manager/employee/${newEmployee.id!}?created=y`);
+    } catch (error:any) {
+        console.log(error);
+        return json<ActionData>(
+            actionData,
+            {status:error.status}
+        )
+    }
 }
 
 

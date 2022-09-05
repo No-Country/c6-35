@@ -19,11 +19,11 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Address extends BaseEntity{
-    @OneToMany
-    @Column(name = "municipalidad")
-    private Municipalities municipalities;
-    @OneToMany
-    @Column(name = "localidad")
+    @ManyToOne
+    @JoinColumn(name = "municipalidad_id")
+    private Municipalities municipality;
+    @ManyToOne
+    @JoinColumn(name = "cocalidad_id")
     private Locality locality;
     @Column(name = "calle")
     private String street;

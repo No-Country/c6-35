@@ -9,7 +9,6 @@ export default function ManagerBar(params:{onAddClick:Function|string, onMassive
     function onChangeHandle(i:any) {
         let colums =[...params.columns];
         colums[i].on = !(colums[i].on); 
-        console.log(colums[i]);
         params.setColumns(colums)
     }
     return (<>

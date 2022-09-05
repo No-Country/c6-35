@@ -8,6 +8,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "municipalidad")
@@ -21,7 +22,8 @@ import javax.persistence.*;
 public class Municipalities extends BaseEntity{
     @Column(name = "municipio")
     private String nombre;
-    @ManyToOne
-    @Column(name = "localidad")
-    private Locality locality;
+    @OneToMany(mappedBy = "municipality")
+    private List<Locality> localities;
+    @OneToMany(mappedBy = "municipality")
+    private List<Address> addresses;
 }
